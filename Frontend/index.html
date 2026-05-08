@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <title>Xây dựng Graph OSM - Quận Hai Bà Trưng</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="style1.css">
+    <link rel="icon" href="https://i.pinimg.com/1200x/d4/85/8f/d4858fd1d4664a86bcf06733e56608d7.jpg">
+    <style>
+        #map {
+            height: 100vh;
+            width: 100vw;
+            position: relative;
+            z-index: 1;
+        }
+
+        #status {
+            padding: 10px;
+            background: #f3f8f6;
+            font-family: monospace;
+            position: fixed;
+            right: 10px;
+            bottom: 10px;
+            z-index: 99999;
+            border: 1px solid black;
+        }
+    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+    <div id="map">
+        <div id="themeChange">
+            <img src="https://i.pinimg.com/736x/f2/84/c5/f284c5a15c983ad1cf564b120a920e53.jpg"
+                alt="Thay đổi nền sang tối   ">
+        </div>
+        <div class="searchBox" id="searchBox_cont1">
+            <div class="searchBox" id="searchBox_cont2">
+                <form id="searchBox" style="width:100%; height: 100%"><input type=""
+                        style="width: 100%; height: 100%; text-align:center; font-size: 16px; font-family: monospace;"
+                        placeholder="Nhập địa điểm muốn đến" id="inputsearchBox"></form>
+            </div>
+            <div id="searchBox_cont3">
+                <ul class="searchDisplay" id="resultList">
+                    
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div id="status">Đã thực hiện xong
+    </div>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="./prototype1.js"></script>
+</body>
+
+</html>

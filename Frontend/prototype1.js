@@ -1,28 +1,74 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Xây dựng Graph OSM - Quận Hai Bà Trưng</title>
-    <meta charset="utf-8" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <style>
-        #map { height: 600px; width: 100%; }
-        #status { padding: 10px; background: #d89a9a; font-family: monospace; }
-    </style>
-</head>
-<body>
-    <div id="status">Đang tải dữ liệu đường xá (Graph)...</div>
-    <div id="map"></div>
-
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script>
-        // Khởi tạo bản đồ tại tọa độ trung tâm Quận Hai Bà Trưng [vĩ độ, kinh độ]
+ // Khởi tạo bản đồ tại tọa độ trung tâm Quận Hai Bà Trưng [vĩ độ, kinh độ]
         // Zoom mức 14 để nhìn rõ các con đường
-        const map = L.map('map').setView([21.0125, 105.8546], 14);
+        const map = L.map("map").setView([21.0125, 105.8546], 14);
         
         // Thêm lớp bản đồ nền (TileLayer) từ OpenStreetMap
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
+        const q=`[out:json];
+            area(3609421134)->.a;
+            relation["boundary"="administrative"]["postal_code"="11626"]->.hbt;
+        .hbt >> -> .all;
+        way.all -> ._;
+        ._ out geom;`;
+        const url1=`https://overpass-api.de/api/interpreter?data=`+encodeURIComponent(q);
+        const arr1=[];
+        let arr2=[];
+        fetch(url1)
+        .then(re=>re.json())
+        .then(bound=>{
+        bound.elements.forEach(item=>{
+            L.polyline(item.geometry,{color: "orange", weight: 3, opacity: 1}).addTo(map);
+        })
+        .catch(err=>{document.getElementById("status").innerText="lỗi tải bound"})
+         })
+         //Xử lí thực hiện nhập liệu
+        const event=document.getElementById('searchBox');
+        let noidungtimkiem="";
+        event.addEventListener('submit', (eve)=>{
+            eve.preventDefault();
+            noidungtimkiem=document.getElementById('inputsearchBox').value;
+            const search_querry=`https://nominatim.openstreetmap.org/search?q=${noidungtimkiem}&format=json&limit=10`;
+        fetch(search_querry)
+        .then(res=>res.json())
+        .then(data=>{
+            data.forEach(item=>{
+                let temp=document.createElement('li');
+                temp.innerText = item.display_name;
+                document.getElementById('resultList').appendChild(temp);
+            })
+        })
+        })
+        
 
-        // 1. KHAI BÁO CẤU TRÚC DỮ LIỆU ĐỒ THỊ (GRAPH)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+       /* 1. KHAI BÁO CẤU TRÚC DỮ LIỆU ĐỒ THỊ (GRAPH)
         const graph = {
             nodes: {}, // Chứa danh sách các điểm: { 'lat_lon': {lat, lon, neighbors: []} }
             
@@ -31,9 +77,9 @@
                 this.nodes[node1Id].neighbors.push({ id: node2Id, weight: dist });
                 this.nodes[node2Id].neighbors.push({ id: node1Id, weight: dist });
             }
-        };
+        };*/
 
-        // 2. HÀM TÍNH KHOẢNG CÁCH (Công thức Haversine)
+        /* 2. HÀM TÍNH KHOẢNG CÁCH (Công thức Haversine), tạm thời chưa tính đến 
         // Vì trái đất hình cầu, không dùng Pitago được mà phải dùng công thức này để tính km từ tọa độ
         function getDist(lat1, lon1, lat2, lon2) {
             const R = 6371; // Bán kính Trái đất (km)
@@ -43,11 +89,11 @@
                       Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
                       Math.sin(dLon/2) * Math.sin(dLon/2);
             return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-        }
+        }*/
 
         // 3. TRUY VẤN DỮ LIỆU TỪ OVERPASS API (Dữ liệu bản đồ thực tế)
         // Area ID 3609421134 là mã định danh vùng của Quận Hai Bà Trưng
-        const query = `[out:json];
+       /* const query = `[out:json];
             area(3609421134)->.a;
             way["highway"~"primary|secondary|tertiary|residential"](area.a);
             out geom;`; // "out geom" để lấy đầy đủ tọa độ của các điểm tạo nên con đường
@@ -62,7 +108,7 @@
             
             // Duyệt qua từng con đường (way) nhận được từ dữ liệu bản đồ
             data.elements.forEach(way => {
-                const nodesInWay = way.geometry; // Mảng các điểm {lat, lon} tạo thành đường này
+                const nodesInWay = way.geometry; // Mảng cá\c điểm {lat, lon} tạo thành đường này
                 
                 for (let i = 0; i < nodesInWay.length; i++) {
                     const curr = nodesInWay[i];
@@ -90,7 +136,7 @@
 
                         // Vẽ đường kẻ màu xanh lá trên bản đồ để trực quan hóa con đường
                         L.polyline([[prev.lat, prev.lon], [curr.lat, curr.lon]], {
-                            color: 'green', weight: 1, opacity: 0.5
+                            color: 'green', weight: 1, opacity: 1.0
                         }).addTo(map);
                     }
                 }
@@ -103,7 +149,4 @@
         .catch(err => {
             document.getElementById('status').innerText = "Lỗi tải dữ liệu.";
             console.error(err);
-        });
-    </script>
-</body>
-</html>
+        });*/
